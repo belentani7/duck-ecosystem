@@ -5,7 +5,7 @@
 - [x] Dashboard principal PT-BR con estética verde neon sobre fondo oscuro
 - [x] Sidebar persistente con navegación por teclado y micro-animaciones tipo hardware de áudio
 - [x] Tela de carregamento con shaders y frases motivacionais sobre perseverança, sonhos y autoconhecimento
-- [ ] Gestão de clientes con historial, estados y roles
+- [x] Gestão de clientes con historial, estados y roles
 - [x] Gestão de proyectos con fases, status y percentuais de participação
 - [x] Permissões parciais de visualização para clientes
 - [x] Histórico de actividades por cliente y proyecto
@@ -174,8 +174,8 @@
 
 ## Notification persistence integration
 
-- [ ] Validar mutações de aprovação, comentário e finanças com um banco temporário real e registros em studioNotifications
-- [ ] Validar leitura real por usuário após as mutações sem mocks de db
+- [x] Validar mutações de aprovação, comentário e finanças com um banco temporário real e registros em studioNotifications
+- [x] Validar leitura real por usuário após as mutações sem mocks de db
 
 ## Windows packaging verification
 
@@ -185,8 +185,8 @@
 
 ## Electron integrated smoke coverage
 
-- [ ] Executar smoke test integrado do shell Electron com backend local empacotado
-- [ ] Validar processo Electron, carregamento da UI e backend acessível durante a sessão
+- [x] Executar smoke test integrado do shell Electron com backend local empacotado
+- [x] Validar processo Electron, carregamento da UI e backend acessível durante a sessão
 - [x] Adicionar fallback headless/CI e documentar limitação de display do host quando necessário
 
 ## RBAC hardening finalizado

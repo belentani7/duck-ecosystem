@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { addProjectComment, approveDelivery, canAccessDelivery, canAccessProject, createClient, createDelivery, createProject, createContractDraft, createSale, createStudioNotification, getClientPortalData, listActiveReferrals, listClients, listDeliveries, listInstrumentals, listLicenseOffers, listProjectActivities, listProjects, listSales, listStudioNotifications, updateSaleStatus } from "./db";
+import { addProjectComment, approveDelivery, canAccessDelivery, canAccessProject, createClient, createDelivery, createProject, createContractDraft, createSale, createStudioNotification, getClientPortalData, listActiveReferrals, listClientHistory, listClients, listDeliveries, listInstrumentals, listLicenseOffers, listProjectActivities, listProjects, listSales, listStudioNotifications, updateSaleStatus } from "./db";
 
 const deny = (message: string) => { throw new TRPCError({ code: "FORBIDDEN", message }); };
 const staffProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -40,6 +40,7 @@ export const appRouter = router({
   }),
   studio: router({
     clients: staffProcedure.query(({ ctx }) => listClients(ctx.user.id)),
+    clientHistory: staffProcedure.query(({ ctx }) => listClientHistory(ctx.user.id)),
     createClient: adminProcedure.input(z.object({ name: z.string().min(1), email: z.string().email().optional(), genre: z.string().optional(), userId: z.number().int().positive().optional() })).mutation(({ ctx, input }) => createClient({ ownerId: ctx.user.id, role: "viewer", ...input })),
     projects: staffProcedure.query(({ ctx }) => listProjects(ctx.user.id)),
     createProject: staffProcedure.input(z.object({ name: z.string().min(1), clientId: z.number().int().positive().optional(), phase: z.string().default("Pré-produção"), participation: z.string().default("Duck 100%") })).mutation(({ ctx, input }) => createProject({ ownerId: ctx.user.id, ...input })),

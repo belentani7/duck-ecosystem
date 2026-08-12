@@ -3,7 +3,7 @@ const path = require("node:path");
 const http = require("node:http");
 const root = path.resolve(__dirname, "..");
 const backend = process.platform === "win32" ? path.join(root, "backend", "dist", "duckos-core.exe") : path.join(root, "backend", "dist", "duckos-core");
-const electron = path.join(root, "desktop", "node_modules", ".bin", process.platform === "win32" ? "electron.cmd" : "electron");
+const electron = path.join(root, "desktop", "node_modules", "electron", "dist", process.platform === "win32" ? "electron.exe" : "electron");
 const backendProcess = spawn(backend, [], { stdio: "ignore" });
 const electronBinary = path.join(root, "desktop", "node_modules", "electron", "dist", process.platform === "win32" ? "electron.exe" : "electron");
 const requestHealth = () => new Promise((resolve, reject) => { const req = http.get("http://127.0.0.1:8765/health", (res) => { let data = ""; res.on("data", (chunk) => { data += chunk; }); res.on("end", () => resolve(res.statusCode === 200 && data.includes("local-offline"))); }); req.on("error", reject); req.setTimeout(1000, () => { req.destroy(); reject(new Error("timeout")); }); });

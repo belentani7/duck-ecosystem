@@ -28,4 +28,4 @@ El bundle web y el backend local se validan en Linux; el backend se congela como
 
 ## Smoke integrado
 
-O script `node scripts/smoke-electron.cjs` valida o backend congelado via `GET /health` e tenta iniciar Electron sob Xvfb. Neste host, o backend passou e o Electron foi reportado como `skipped-electron-payload-missing` porque a instalação local foi feita sem o payload pós-instalação; o mesmo script indica executar `pnpm install` com postinstall habilitado em CI/Windows para concluir a abertura da janela.
+O script `node scripts/smoke-electron.cjs` valida o backend congelado via `GET /health` e tenta iniciar Electron sob Xvfb. Neste host, após disponibilizar o payload oficial Linux do Electron e reconstruir o backend PyInstaller, o smoke passou com `{"ok":true,"backend":"healthy","electron":"running-under-xvfb"}`. O script ainda mantém o fallback explícito para CI/Windows quando o payload não estiver instalado.
