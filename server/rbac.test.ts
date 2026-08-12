@@ -28,7 +28,7 @@ describe("RBAC do studio", () => {
 
   it("permite collaborator aprovar entrega dentro do escopo", async () => {
     await appRouter.createCaller(context(30, "collaborator")).studio.approveDelivery({ deliveryId: 10 });
-    expect(dbMocks.approveDelivery).toHaveBeenCalledWith(10);
+    expect(dbMocks.approveDelivery).toHaveBeenCalledWith(10, 30);
   });
 
   it("bloqueia comentário quando a entrega não pertence ao usuário", async () => {

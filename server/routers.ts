@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { addProjectComment, approveDelivery, canAccessDelivery, canAccessProject, createClient, createDelivery, createProject, createContractDraft, createSale, createStudioNotification, getClientPortalData, listClients, listDeliveries, listInstrumentals, listProjectActivities, listProjects, listSales, listStudioNotifications, updateSaleStatus } from "./db";
+import { addProjectComment, approveDelivery, canAccessDelivery, canAccessProject, createClient, createDelivery, createProject, createContractDraft, createSale, createStudioNotification, getClientPortalData, listActiveReferrals, listClients, listDeliveries, listInstrumentals, listLicenseOffers, listProjectActivities, listProjects, listSales, listStudioNotifications, updateSaleStatus } from "./db";
 
 const deny = (message: string) => { throw new TRPCError({ code: "FORBIDDEN", message }); };
 const staffProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -44,16 +44,17 @@ export const appRouter = router({
     projects: staffProcedure.query(({ ctx }) => listProjects(ctx.user.id)),
     createProject: staffProcedure.input(z.object({ name: z.string().min(1), clientId: z.number().int().positive().optional(), phase: z.string().default("Pré-produção"), participation: z.string().default("Duck 100%") })).mutation(({ ctx, input }) => createProject({ ownerId: ctx.user.id, ...input })),
     deliveries: protectedProcedure.input(z.object({ projectId: z.number().int().positive() })).query(async ({ ctx, input }) => { await requireProject(ctx, input.projectId); return listDeliveries(input.projectId); }),
-    createDelivery: staffProcedure.input(z.object({ projectId: z.number().int().positive(), version: z.string(), fileName: z.string(), fileUrl: z.string().optional() })).mutation(async ({ ctx, input }) => { await requireProject(ctx, input.projectId); return createDelivery({ ...input, status: "review" }); }),
-    approveDelivery: staffProcedure.input(z.object({ deliveryId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await requireDelivery(ctx, input.deliveryId); const result = await approveDelivery(input.deliveryId); await createStudioNotification({ userId: ctx.user.id, kind: "delivery", message: `Entrega #${input.deliveryId} aprovada` }); return result; }),
+    createDelivery: staffProcedure.input(z.object({ projectId: z.number().int().positive(), version: z.string(), fileName: z.string(), fileUrl: z.string().optional() })).mutation(async ({ ctx, input }) => { await requireProject(ctx, input.projectId); return createDelivery({ ...input, status: "review" }, ctx.user.id); }),
+    approveDelivery: staffProcedure.input(z.object({ deliveryId: z.number().int().positive() })).mutation(async ({ ctx, input }) => { await requireDelivery(ctx, input.deliveryId); const result = await approveDelivery(input.deliveryId, ctx.user.id); await createStudioNotification({ userId: ctx.user.id, kind: "delivery", message: `Entrega #${input.deliveryId} aprovada` }); return result; }),
     comment: protectedProcedure.input(z.object({ deliveryId: z.number().int().positive(), body: z.string().min(1), timestampMs: z.number().int().nonnegative().optional() })).mutation(async ({ ctx, input }) => { await requireDelivery(ctx, input.deliveryId); const result = await addProjectComment({ authorId: ctx.user.id, ...input }); await createStudioNotification({ userId: ctx.user.id, kind: "comment", message: "Novo comentário salvo na entrega" }); return result; }),
     portal: viewerProcedure.query(({ ctx }) => getClientPortalData(ctx.user.id)),
     activities: protectedProcedure.input(z.object({ projectId: z.number().int().positive().optional() }).optional()).query(async ({ ctx, input }) => { if (input?.projectId) await requireProject(ctx, input.projectId); else if (ctx.user.role !== "admin" && ctx.user.role !== "collaborator") deny("Informe um projeto dentro do seu escopo"); return listProjectActivities(input?.projectId); }),
     instrumentals: staffProcedure.query(({ ctx }) => listInstrumentals(ctx.user.id)),
+    catalog: staffProcedure.query(async ({ ctx }) => ({ instrumentals: await listInstrumentals(ctx.user.id), licenseOffers: await listLicenseOffers(), referrals: await listActiveReferrals() })),
     createSale: staffProcedure.input(z.object({ clientId: z.number().int().positive(), licenseOfferId: z.number().int().positive(), referralCode: z.string().optional() })).mutation(({ input }) => createSale(input)),
     createContractDraft: staffProcedure.input(z.object({ saleId: z.number().int().positive() })).mutation(({ input }) => createContractDraft(input.saleId)),
     sales: staffProcedure.query(() => listSales()),
-    updateSaleStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "paid", "refunded"]) })).mutation(async ({ ctx, input }) => { const result = await updateSaleStatus(input.id, input.status); await createStudioNotification({ userId: ctx.user.id, kind: "finance", message: `Pagamento #${input.id} alterado para ${input.status}` }); return result; }),
+    updateSaleStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "paid", "refunded"]) })).mutation(async ({ ctx, input }) => { const result = await updateSaleStatus(input.id, input.status, ctx.user.id); await createStudioNotification({ userId: ctx.user.id, kind: "finance", message: `Pagamento #${input.id} alterado para ${input.status}` }); return result; }),
     notifications: protectedProcedure.query(({ ctx }) => listStudioNotifications(ctx.user.id)),
   }),
 });

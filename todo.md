@@ -77,11 +77,11 @@
 
 ## Persistência e operação real
 
-- [ ] Conectar projetos, clientes, entregas, catálogo, referidos e finanças ao backend via tRPC e substituir dados estáticos onde possível
+- [x] Conectar projetos, clientes, entregas, catálogo, referidos e finanças ao backend via tRPC e substituir dados estáticos onde possível
 - [x] Implementar enforcement de RBAC para admin, colaborador e cliente-visualizador
 - [x] Criar upload/versionamento real de entregas e fluxo de comentário por timestamp com aprovação
-- [ ] Ligar catálogo/licenças/splits/referidos ao banco e aplicar desconto automático em propostas/vendas
-- [ ] Implementar módulo financeiro persistente com criação de cobrança, alteração de status e listagem
+- [x] Ligar catálogo/licenças/splits/referidos ao banco e aplicar desconto automático em propostas/vendas
+- [x] Implementar módulo financeiro persistente com criação de cobrança, alteração de status e listagem
 
 ## Audio completion pass
 
@@ -113,16 +113,16 @@
 
 ## Product integrity hardening
 
-- [ ] Gravar atividades reais em projetos, entregas, comentários, aprovações e finanças, sem depender de fallback no histórico
-- [ ] Gerar orçamento/contrato com dados persistidos de instrumentais, licenças, vendas, descontos e contratos
+- [x] Gravar atividades reais em projetos, entregas, comentários, aprovações e finanças, sem depender de fallback no histórico
+- [x] Gerar orçamento/contrato com dados persistidos de instrumentais, licenças, vendas, descontos e contratos
 - [x] Criar vínculo real de cliente-visualizador e aplicar RBAC específico ao portal seguro
 
 ## Delivery persistence hardening
 
-- [ ] Persistir entregas/versiones no banco com arquivo, versão, status e projeto
-- [ ] Conectar comentários por timestamp do portal a endpoint/tRPC persistente vinculado à versão correta
-- [ ] Persistir aprovações/status de entrega no backend e refletir no histórico
-- [ ] Adicionar testes cobrindo upload, versão, comentário por timestamp e aprovação
+- [x] Persistir entregas/versiones no banco com arquivo, versão, status e projeto
+- [x] Conectar comentários por timestamp do portal a endpoint/tRPC persistente vinculado à versão correta
+- [x] Persistir aprovações/status de entrega no backend e refletir no histórico
+- [x] Adicionar testes cobrindo upload, versão, comentário por timestamp e aprovação
 
 ## Repository audit product integration
 
