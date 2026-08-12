@@ -8,6 +8,20 @@
       "when": 1786571836709,
       "tag": "0000_glorious_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1786572890413,
+      "tag": "0001_true_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786572990479,
+      "tag": "0002_serious_elektra",
+      "breakpoints": true
     }
   ]
 }

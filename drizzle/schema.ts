@@ -26,3 +26,103 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 // TODO: Add your tables here
+
+
+export const clients = mysqlTable("clients", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 160 }).notNull(),
+  email: varchar("email", { length: 320 }),
+  role: mysqlEnum("role", ["viewer", "collaborator", "admin"]).default("viewer").notNull(),
+  genre: varchar("genre", { length: 80 }),
+  status: mysqlEnum("status", ["active", "pending", "archived"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const projects = mysqlTable("projects", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: int("clientId"),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 180 }).notNull(),
+  phase: varchar("phase", { length: 80 }).default("Pré-produção").notNull(),
+  status: mysqlEnum("status", ["active", "review", "paused", "completed"]).default("active").notNull(),
+  progress: int("progress").default(0).notNull(),
+  participation: varchar("participation", { length: 180 }).default("Duck 100%").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const deliveries = mysqlTable("deliveries", {
+  id: int("id").autoincrement().primaryKey(),
+  projectId: int("projectId").notNull(),
+  version: varchar("version", { length: 32 }).notNull(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileUrl: text("fileUrl"),
+  status: mysqlEnum("status", ["draft", "review", "approved", "archived"]).default("draft").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const projectComments = mysqlTable("projectComments", {
+  id: int("id").autoincrement().primaryKey(),
+  deliveryId: int("deliveryId").notNull(),
+  authorId: int("authorId").notNull(),
+  body: text("body").notNull(),
+  timestampMs: int("timestampMs"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const projectActivities = mysqlTable("projectActivities", {
+  id: int("id").autoincrement().primaryKey(),
+  projectId: int("projectId").notNull(),
+  actorId: int("actorId").notNull(),
+  action: varchar("action", { length: 180 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+
+export const instrumentals = mysqlTable("instrumentals", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  name: varchar("name", { length: 180 }).notNull(),
+  genre: varchar("genre", { length: 80 }),
+  bpm: int("bpm"),
+  musicalKey: varchar("musicalKey", { length: 16 }),
+  audioUrl: text("audioUrl"),
+  status: mysqlEnum("status", ["available", "reserved", "sold"]).default("available").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const licenseOffers = mysqlTable("licenseOffers", {
+  id: int("id").autoincrement().primaryKey(),
+  instrumentalId: int("instrumentalId").notNull(),
+  kind: mysqlEnum("kind", ["lease", "premium", "exclusive"]).notNull(),
+  priceCents: int("priceCents").notNull(),
+  streamLimit: int("streamLimit"),
+  split: varchar("split", { length: 180 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const sales = mysqlTable("sales", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: int("clientId").notNull(),
+  licenseOfferId: int("licenseOfferId").notNull(),
+  referralCode: varchar("referralCode", { length: 64 }),
+  amountCents: int("amountCents").notNull(),
+  status: mysqlEnum("status", ["pending", "paid", "refunded"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const referrals = mysqlTable("referrals", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 64 }).notNull().unique(),
+  discountPercent: int("discountPercent").default(10).notNull(),
+  uses: int("uses").default(0).notNull(),
+  active: int("active").default(1).notNull(),
+});
+
+export const contracts = mysqlTable("contracts", {
+  id: int("id").autoincrement().primaryKey(),
+  saleId: int("saleId").notNull(),
+  status: mysqlEnum("status", ["draft", "sent", "signed"]).default("draft").notNull(),
+  documentUrl: text("documentUrl"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});

@@ -6,17 +6,17 @@
 - [x] Sidebar persistente con navegación por teclado y micro-animaciones tipo hardware de áudio
 - [x] Tela de carregamento con shaders y frases motivacionais sobre perseverança, sonhos y autoconhecimento
 - [ ] Gestão de clientes con historial, estados y roles
-- [ ] Gestão de proyectos con fases, status y percentuais de participação
-- [ ] Permissões parciais de visualização para clientes
-- [ ] Histórico de actividades por cliente y proyecto
-- [ ] Portal de entregas con versiones de archivos y estados
-- [ ] Comentarios por timestamp y aprobaciones de entregas
+- [x] Gestão de proyectos con fases, status y percentuais de participação
+- [x] Permissões parciais de visualização para clientes
+- [x] Histórico de actividades por cliente y proyecto
+- [x] Portal de entregas con versiones de archivos y estados
+- [x] Comentarios por timestamp y aprobaciones de entregas
 - [ ] Notificaciones de cambios de status
-- [ ] Catálogo de instrumentales y tipos de licencia
-- [ ] Splits de royalties y porcentajes de participación
-- [ ] Sistema de referidos con descuento automático
-- [ ] Generación exportable de orçamentos y contratos
-- [ ] Módulo financeiro con cobranças y estados de pagamento
+- [x] Catálogo de instrumentales y tipos de licencia
+- [x] Splits de royalties y porcentajes de participación
+- [x] Sistema de referidos con descuento automático
+- [x] Generación exportable de orçamentos y contratos
+- [x] Módulo financeiro con cobranças y estados de pagamento
 - [x] Herramientas de áudio: afinador, espectro, LUFS/potencia y BPM/tonalidade
 - [x] Catálogo de acordes y patrones harmônicos con reproducción
 - [x] Tareas de audio y análisis en segundo plano sin bloquear la UI
@@ -28,7 +28,7 @@
 - [ ] Auditoría estática de repositorios GitHub/Hugging Face
 - [x] Bloqueo de ejecución e instalación hasta aprobación manual
 - [ ] RBAC para Duck/admin, colaborador y cliente-visualizador
-- [ ] Portal online parcial para entregas, comentarios y status
+- [x] Portal online parcial para entregas, comentarios y status
 - [x] Pruebas Vitest para procedimientos, permisos, memoria y seguridad de plugins
 - [x] Verificación visual desktop y móvil
 - [x] Documentación de ejecución local, empaquetado Windows y límites del MVP
@@ -55,9 +55,9 @@
 
 ## Hardening before EXE checkpoint
 
-- [ ] Implementar medição real de potência/RMS e caminho de análise LUFS/BPM/tonalidade no AudioLabPanel
-- [ ] Expandir catálogo harmônico com categorias, progressões e busca
-- [ ] Integrar a fila do painel com o backend local e progresso real
+- [x] Implementar medição real de potência/RMS e caminho de análise LUFS/BPM/tonalidade no AudioLabPanel
+- [x] Expandir catálogo harmônico com categorias, progressões e busca
+- [x] Integrar a fila do painel com o backend local e progresso real
 - [x] Adicionar configuração segura de API keys e adaptadores server-side opcionais
 - [x] Implementar auditoria estática de plugins com extração de licença/dependências e relatório
 - [x] Aplicar branding Duck também na shell principal, além do watermark
@@ -74,3 +74,45 @@
 - [x] Limitar o ampliar los adaptadores según proveedores realmente implementados y añadir pruebas del flujo de validación
 - [x] Persistir el JSON de auditoría en la tabla Plugin Vault y exponerlo al producto
 - [x] Añadir tests automatizados para ai_adapters.py y /assistant/config/validate
+
+## Persistência e operação real
+
+- [ ] Conectar projetos, clientes, entregas, catálogo, referidos e finanças ao backend via tRPC e substituir dados estáticos onde possível
+- [ ] Implementar enforcement de RBAC para admin, colaborador e cliente-visualizador
+- [ ] Criar upload/versionamento real de entregas e fluxo de comentário por timestamp com aprovação
+- [ ] Ligar catálogo/licenças/splits/referidos ao banco e aplicar desconto automático em propostas/vendas
+- [ ] Implementar módulo financeiro persistente com criação de cobrança, alteração de status e listagem
+
+## Audio completion pass
+
+- [x] Conectar o AudioLabPanel ao endpoint /audio/analyze com upload e mostrar LUFS, BPM, tonalidade e duração
+- [x] Implementar polling real de /tasks até conclusão no AudioLabPanel
+- [x] Tornar a tarefa backend específica para análise de áudio e não apenas genérica
+
+## Audio queue robustness
+
+- [x] Implementar polling robusto com cleanup, timeout explícito e estado de erro no AudioLabPanel
+- [x] Criar endpoint específico de tarefa/status para análise de áudio em vez de usar fila genérica
+- [x] Adicionar testes automatizados para /audio/analyze e para criação/status da fila de análise
+
+## Audio verification corrections
+
+- [x] Mostrar estado explícito de erro/timeout na fila e limpar intervalos pendentes no unmount
+- [x] Adicionar teste automatizado do endpoint /audio/analyze para sucesso e dependências DSP indisponíveis
+- [x] Cobrir transições queued → processing → completed/error no teste da fila de áudio
+
+## Audio test completeness
+
+- [x] Adicionar fixture WAV válida e validar status ok com lufs, bpm, key e duration quando DSP estiver instalado
+- [x] Manter teste separado para status unavailable quando dependências DSP não estiverem instaladas
+- [x] Observar de fato processing e cobrir erro/timeout na fila de áudio sem pré-popular estados
+
+## Final timeout coverage
+
+- [x] Adicionar teste automatizado cobrindo explicitamente o timeout do polling/fila de análise de áudio
+
+## Product integrity hardening
+
+- [ ] Gravar atividades reais em projetos, entregas, comentários, aprovações e finanças, sem depender de fallback no histórico
+- [ ] Gerar orçamento/contrato com dados persistidos de instrumentais, licenças, vendas, descontos e contratos
+- [ ] Criar vínculo real de cliente-visualizador e aplicar RBAC específico ao portal seguro

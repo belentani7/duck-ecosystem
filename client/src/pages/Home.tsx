@@ -38,6 +38,11 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { AssistantWidget } from "@/components/AssistantWidget";
 import { AudioLabPanel } from "@/components/AudioLabPanel";
 import { PluginReportPanel } from "@/components/PluginReportPanel";
+import { StudioManagementPanel } from "@/components/StudioManagementPanel";
+import { CatalogPanel } from "@/components/CatalogPanel";
+import { DeliveryPortalPanel } from "@/components/DeliveryPortalPanel";
+import { FinancePanel } from "@/components/FinancePanel";
+import { ActivityHistoryPanel } from "@/components/ActivityHistoryPanel";
 
 const phrases = [
   "Acredite no seu som.",
@@ -66,6 +71,7 @@ const navItems = [
   { label: "Clientes", icon: Users, count: "18" },
   { label: "Entregas", icon: PackageCheck, count: "03" },
   { label: "Financeiro", icon: CircleDollarSign },
+  { label: "Catálogo", icon: Music2 },
   { label: "Ferramentas", icon: Headphones },
   { label: "Vault de plugins", icon: ShieldCheck },
 ];
@@ -133,6 +139,11 @@ export default function Home() {
 
         <section className="bottom-grid"><div className="panel audio-panel"><div className="panel-heading"><div><span className="panel-kicker">STUDIO RACK</span><h2>Ferramentas de áudio</h2></div><button className="text-button" onClick={() => setActive("Ferramentas")}>Abrir rack <ArrowUpRight size={15} /></button></div><div className="audio-tools">{audioTools.map(({ icon: Icon, label, value, hint }) => <button key={label} className="audio-tool" onClick={() => setActive("Ferramentas")}><span className="tool-icon"><Icon size={19} /></span><b>{label}</b><strong>{value}</strong><small>{hint}</small><span className="tool-led" /></button>)}</div></div><div className="panel security-panel"><div className="panel-heading"><div><span className="panel-kicker">SECURITY</span><h2>Plugin Vault</h2></div><LockKeyhole size={18} className="panel-muted" /></div><div className="security-score"><div className="score-ring"><strong>94</strong><span>/100</span></div><div><b>Ambiente protegido</b><span>25 plugins inventariados</span><small><ShieldCheck size={13} /> Nenhuma ameaça detectada</small></div></div><div className="vault-row"><Code2 size={16} /><span>VST/CLAP aguardando aprovação</span><b>02</b></div><button className="full-link" onClick={() => setActive("Vault de plugins")}>Revisar fila segura <ArrowUpRight size={15} /></button></div></section>
 
+        {active === "Projetos" && <><StudioManagementPanel section="Projetos" /><ActivityHistoryPanel /></>}
+        {active === "Clientes" && <StudioManagementPanel section="Clientes" />}
+        {active === "Entregas" && <DeliveryPortalPanel />}
+        {active === "Financeiro" && <FinancePanel />}
+        {active === "Catálogo" && <CatalogPanel />}
         {active === "Ferramentas" && <AudioLabPanel />}
         {active === "Vault de plugins" && <PluginReportPanel />}
         <footer className="app-footer"><span><span className="footer-led" /> DUCK.OS LOCAL CORE v0.1.0</span><span>Seus dados permanecem sob seu controle</span><span>Ajuda <span className="footer-separator">·</span> Privacidade</span></footer>

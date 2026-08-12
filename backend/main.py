@@ -43,11 +43,18 @@ def worker():
     while True:
         task = TASKS.get()
         task_id = task["id"]
-        TASK_STATUS[task_id] = {"id": task_id, "label": task["label"], "state": "processando", "progress": 5}
+        TASK_STATUS[task_id] = {"id": task_id, "kind": task.get("kind", "generic"), "label": task["label"], "state": "processando", "status": "processing", "progress": 5}
+        if task.get("force_error"):
+            TASK_STATUS[task_id]["state"] = "erro"
+            TASK_STATUS[task_id]["status"] = "error"
+            TASKS.task_done()
+            continue
         for progress in (22, 48, 72, 100):
             time.sleep(0.15)
             TASK_STATUS[task_id]["progress"] = progress
         TASK_STATUS[task_id]["state"] = "concluído"
+        TASK_STATUS[task_id]["status"] = "completed"
+        if task.get("kind") == "audio_analysis": TASK_STATUS[task_id]["result"] = {"message": "Arquivo pronto para consulta DSP"}
         TASKS.task_done()
 
 
@@ -128,6 +135,16 @@ def create_task(label: str = "Análise de áudio"):
 @app.get("/tasks")
 def tasks():
     return list(TASK_STATUS.values())
+
+@app.post("/audio/tasks")
+def create_audio_task(simulate_error: bool = False):
+    task_id = hashlib.sha1(f"audio-analysis{time.time()}".encode()).hexdigest()[:12]
+    TASKS.put({"id": task_id, "kind": "audio_analysis", "label": "Análise de áudio", "force_error": simulate_error})
+    return {"id": task_id, "kind": "audio_analysis", "state": "fila", "status": "queued", "progress": 0}
+
+@app.get("/audio/tasks")
+def audio_tasks():
+    return [item for item in TASK_STATUS.values() if item.get("kind") == "audio_analysis"]
 
 
 @app.post("/plugins/audit")
