@@ -16,7 +16,7 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["user", "admin", "collaborator", "viewer"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -31,6 +31,7 @@ export type InsertUser = typeof users.$inferInsert;
 export const clients = mysqlTable("clients", {
   id: int("id").autoincrement().primaryKey(),
   ownerId: int("ownerId").notNull(),
+  userId: int("userId"),
   name: varchar("name", { length: 160 }).notNull(),
   email: varchar("email", { length: 320 }),
   role: mysqlEnum("role", ["viewer", "collaborator", "admin"]).default("viewer").notNull(),
@@ -124,5 +125,13 @@ export const contracts = mysqlTable("contracts", {
   saleId: int("saleId").notNull(),
   status: mysqlEnum("status", ["draft", "sent", "signed"]).default("draft").notNull(),
   documentUrl: text("documentUrl"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const studioNotifications = mysqlTable("studioNotifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  kind: varchar("kind", { length: 64 }).notNull(),
+  message: text("message").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });

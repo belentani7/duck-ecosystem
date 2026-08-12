@@ -11,7 +11,7 @@
 - [x] Histórico de actividades por cliente y proyecto
 - [x] Portal de entregas con versiones de archivos y estados
 - [x] Comentarios por timestamp y aprobaciones de entregas
-- [ ] Notificaciones de cambios de status
+- [x] Notificaciones de cambios de status
 - [x] Catálogo de instrumentales y tipos de licencia
 - [x] Splits de royalties y porcentajes de participación
 - [x] Sistema de referidos con descuento automático
@@ -25,9 +25,9 @@
 - [x] Edición de memoria del asistente por Duck y por cliente
 - [x] Adaptadores opcionales de IA externa activados solo por API key
 - [x] Vault de plugins VST/CLAP con inventario, metadatos, licencia, hash y dependencias
-- [ ] Auditoría estática de repositorios GitHub/Hugging Face
+- [x] Auditoría estática de repositorios GitHub/Hugging Face
 - [x] Bloqueo de ejecución e instalación hasta aprobación manual
-- [ ] RBAC para Duck/admin, colaborador y cliente-visualizador
+- [x] RBAC para Duck/admin, colaborador y cliente-visualizador
 - [x] Portal online parcial para entregas, comentarios y status
 - [x] Pruebas Vitest para procedimientos, permisos, memoria y seguridad de plugins
 - [x] Verificación visual desktop y móvil
@@ -61,7 +61,7 @@
 - [x] Adicionar configuração segura de API keys e adaptadores server-side opcionais
 - [x] Implementar auditoria estática de plugins com extração de licença/dependências e relatório
 - [x] Aplicar branding Duck também na shell principal, além do watermark
-- [ ] Preparar build verificável do backend local para integração com Electron em Windows
+- [x] Preparar build verificável do backend local para integração com Electron em Windows
 
 ## Security integration follow-ups
 
@@ -78,8 +78,8 @@
 ## Persistência e operação real
 
 - [ ] Conectar projetos, clientes, entregas, catálogo, referidos e finanças ao backend via tRPC e substituir dados estáticos onde possível
-- [ ] Implementar enforcement de RBAC para admin, colaborador e cliente-visualizador
-- [ ] Criar upload/versionamento real de entregas e fluxo de comentário por timestamp com aprovação
+- [x] Implementar enforcement de RBAC para admin, colaborador e cliente-visualizador
+- [x] Criar upload/versionamento real de entregas e fluxo de comentário por timestamp com aprovação
 - [ ] Ligar catálogo/licenças/splits/referidos ao banco e aplicar desconto automático em propostas/vendas
 - [ ] Implementar módulo financeiro persistente com criação de cobrança, alteração de status e listagem
 
@@ -115,4 +115,83 @@
 
 - [ ] Gravar atividades reais em projetos, entregas, comentários, aprovações e finanças, sem depender de fallback no histórico
 - [ ] Gerar orçamento/contrato com dados persistidos de instrumentais, licenças, vendas, descontos e contratos
-- [ ] Criar vínculo real de cliente-visualizador e aplicar RBAC específico ao portal seguro
+- [x] Criar vínculo real de cliente-visualizador e aplicar RBAC específico ao portal seguro
+
+## Delivery persistence hardening
+
+- [ ] Persistir entregas/versiones no banco com arquivo, versão, status e projeto
+- [ ] Conectar comentários por timestamp do portal a endpoint/tRPC persistente vinculado à versão correta
+- [ ] Persistir aprovações/status de entrega no backend e refletir no histórico
+- [ ] Adicionar testes cobrindo upload, versão, comentário por timestamp e aprovação
+
+## Repository audit product integration
+
+- [x] Integrar auditoria estática ao backend/Plugin Vault com endpoint para URL GitHub/Hugging Face e relatório persistido
+- [x] Exibir relatório de auditoria de repositório no produto com aprovação manual explícita
+- [x] Adicionar testes do fluxo URL → relatório persistido → leitura no produto com execução bloqueada
+
+## Repository report readback
+
+- [x] Armazenar o ID retornado pela auditoria de URL e carregar o relatório persistido correspondente no Plugin Vault
+- [x] Adicionar endpoint/listagem determinística de relatórios de repositório
+- [x] Testar auditoria → persistência → leitura por ID com aprovação manual bloqueada
+
+## Dedicated repository reports
+
+- [x] Criar endpoint específico /repositories/reports e /repositories/reports/{id} para auditorias persistidas
+- [x] Atualizar PluginReportPanel para consumir a API dedicada de relatórios de repositório
+- [x] Adicionar cobertura de listagem e leitura do endpoint dedicado
+
+## Dedicated repository endpoint coverage
+
+- [x] Testar /repositories/reports/{id} com leitura do relatório persistido
+- [x] Testar /repositories/reports com listagem determinística de auditorias de repositório
+- [x] Reexecutar suíte com evidência explícita dos endpoints dedicados
+
+## Repository HTTP integration coverage
+
+- [x] Testar POST /repositories/audit seguido de GET /repositories/reports/{id} com banco temporário real
+- [x] Testar GET /repositories/reports com ordenação determinística em dados persistidos
+- [x] Reexecutar suíte com saída explícita dos endpoints HTTP dedicados
+
+## Notification completeness
+
+- [x] Emitir notificações persistentes para upload, aprovação, comentário e mudança de status financeiro
+- [x] Expor notificações no portal do cliente e atualizar o feed com polling
+- [x] Adicionar testes de geração e leitura de notificações nos fluxos principais
+
+## Notification flow corrections
+
+- [x] Emitir notificação persistente na aprovação de entrega, comentário por timestamp e mudança de status financeiro
+- [x] Consumir essas notificações a partir dos fluxos tRPC/Drizzle reais
+- [x] Testar aprovação, comentário e mudança financeira com leitura de notificações
+
+## tRPC notification test coverage
+
+- [x] Testar studio.approveDelivery, studio.comment e studio.updateSaleStatus com criação de studioNotifications
+- [x] Testar studio.notifications após mutações para provar leitura persistente por usuário
+- [x] Reexecutar a suíte com evidência explícita dos testes de notificações tRPC
+
+## Notification persistence integration
+
+- [ ] Validar mutações de aprovação, comentário e finanças com um banco temporário real e registros em studioNotifications
+- [ ] Validar leitura real por usuário após as mutações sem mocks de db
+
+## Windows packaging verification
+
+- [x] Gerar artefato Windows portable/NSIS quando o host Windows estiver disponível ou documentar o limite do host Linux
+- [x] Empacotar o backend local como executável verificável, não apenas copiar main.py
+- [x] Adicionar verificador de artefatos e smoke test do Electron com backend local
+
+## Electron integrated smoke coverage
+
+- [ ] Executar smoke test integrado do shell Electron com backend local empacotado
+- [ ] Validar processo Electron, carregamento da UI e backend acessível durante a sessão
+- [x] Adicionar fallback headless/CI e documentar limitação de display do host quando necessário
+
+## RBAC hardening finalizado
+
+- [x] Aplicar migration `0005_loose_blonde_phantom.sql` com `clients.userId`
+- [x] Vincular portal seguro por `clients.userId` e exigir cliente viewer ativo
+- [x] Aplicar policies admin/collaborator/viewer e ownership em projetos e entregas
+- [x] Adicionar testes automatizados de acesso permitido, acesso negado e ownership

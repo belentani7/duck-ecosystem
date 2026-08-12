@@ -34,7 +34,8 @@ function createWindow() {
 
 function startLocalBackend() {
   if (process.env.DUCK_DISABLE_BACKEND === '1') return;
-  const backend = path.join(process.resourcesPath || path.join(__dirname, '..'), 'backend', 'duck_local_server.exe');
+  const backendName = process.platform === 'win32' ? 'duckos-core.exe' : 'duckos-core';
+  const backend = path.join(process.resourcesPath || path.join(__dirname, '..'), 'backend', backendName);
   try { localBackend = spawn(backend, [], { windowsHide: true, stdio: 'ignore' }); } catch (error) { console.warn('[Duck] backend local opcional não iniciou', error.message); }
 }
 

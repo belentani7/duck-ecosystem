@@ -21,3 +21,11 @@ A shell Electron usa `contextIsolation`, `sandbox` e `nodeIntegration: false`. O
 ## Escopo atual e extensões
 
 O dashboard, carregamento motivacional, assistente local, áudio Web Audio, fila visual, base do vault e scaffolding de EXE estão em construção incremental. Clientes, entregas, licenças, contratos, finanças, sincronização online e a auditoria de grande volume de repositórios devem ser conectados às tabelas e procedimentos antes de serem considerados produção.
+
+## Estado de empaquetado verificado
+
+El bundle web y el backend local se validan en Linux; el backend se congela como `backend/dist/duckos-core` y el shell Electron usa el binario correspondiente por plataforma. El artefacto Windows portable `desktop/release/DuckOS-RnF-0.1.0-x64.exe` fue generado correctamente con compresión `store`. El objetivo NSIS permanece configurado, pero el host Linux no tiene Wine (`spawn wine ENOENT`); para generar el instalador NSIS final debe ejecutarse `pnpm exec electron-builder --win nsis --publish never` en Windows o en un runner Windows/Wine. La firma digital también requiere un certificado real del propietario.
+
+## Smoke integrado
+
+O script `node scripts/smoke-electron.cjs` valida o backend congelado via `GET /health` e tenta iniciar Electron sob Xvfb. Neste host, o backend passou e o Electron foi reportado como `skipped-electron-payload-missing` porque a instalação local foi feita sem o payload pós-instalação; o mesmo script indica executar `pnpm install` com postinstall habilitado em CI/Windows para concluir a abertura da janela.

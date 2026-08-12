@@ -15,6 +15,8 @@ from pydantic import BaseModel
 
 ROOT = Path.home() / "DuckOS" / "data"
 ROOT.mkdir(parents=True, exist_ok=True)
+DELIVERY_ROOT = ROOT / "deliveries"
+DELIVERY_ROOT.mkdir(parents=True, exist_ok=True)
 DB = ROOT / "duckos.sqlite3"
 TASKS: queue.Queue[dict[str, Any]] = queue.Queue()
 TASK_STATUS: dict[str, dict[str, Any]] = {}
@@ -36,6 +38,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS projects (id INTEGER PRIMARY KEY, client_id INTEGER, name TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active', progress INTEGER NOT NULL DEFAULT 0, participation REAL NOT NULL DEFAULT 100, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(client_id) REFERENCES clients(id));
         CREATE TABLE IF NOT EXISTS memories (client_id INTEGER PRIMARY KEY, notes TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(client_id) REFERENCES clients(id));
         CREATE TABLE IF NOT EXISTS plugins (id INTEGER PRIMARY KEY, name TEXT NOT NULL, format TEXT NOT NULL, license TEXT, sha256 TEXT NOT NULL, static_audit TEXT NOT NULL DEFAULT 'pending', manually_approved INTEGER NOT NULL DEFAULT 0, dependencies TEXT NOT NULL DEFAULT '[]');
+        CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
         """)
 
 
@@ -79,6 +82,15 @@ class ProjectIn(BaseModel):
 class MemoryIn(BaseModel):
     notes: str
 
+
+def add_notification(kind: str, message: str):
+    with connect() as conn:
+        conn.execute("INSERT INTO notifications(kind,message) VALUES(?,?)", (kind, message))
+
+@app.get("/notifications")
+def notifications():
+    with connect() as conn:
+        return [dict(row) for row in conn.execute("SELECT * FROM notifications ORDER BY id DESC LIMIT 30")]
 
 @app.get("/health")
 def health():
@@ -147,6 +159,16 @@ def audio_tasks():
     return [item for item in TASK_STATUS.values() if item.get("kind") == "audio_analysis"]
 
 
+@app.post("/deliveries/upload")
+def upload_delivery(file: UploadFile = File(...), project_id: int = 0, version: str = "draft"):
+    safe_name = Path(file.filename or "delivery.bin").name
+    destination = DELIVERY_ROOT / f"{int(time.time())}_{safe_name}"
+    data = file.file.read()
+    destination.write_bytes(data)
+    add_notification("delivery", f"Nova versão {version} enviada: {safe_name}")
+    return {"projectId": project_id, "version": version, "fileName": safe_name, "filePath": str(destination), "sha256": hashlib.sha256(data).hexdigest(), "status": "review"}
+
+
 @app.post("/plugins/audit")
 def audit_plugin(file: UploadFile = File(...)):
     data = file.file.read()
@@ -161,6 +183,7 @@ def audit_plugin(file: UploadFile = File(...)):
 def approve_plugin(plugin_id: int):
     with connect() as conn:
         conn.execute("UPDATE plugins SET static_audit='passed', manually_approved=1 WHERE id=?", (plugin_id,))
+        add_notification("plugin", f"Plugin {plugin_id} aprovado manualmente")
         return {"id": plugin_id, "status": "approved"}
 
 
@@ -204,6 +227,20 @@ def assistant_complete(messages: list[dict[str, str]]):
     return OptionalAIAdapter().complete(messages)
 
 
+class RepositoryAuditIn(BaseModel):
+    source_url: str
+
+@app.post("/repositories/audit")
+def audit_repository_url(item: RepositoryAuditIn):
+    from scripts.audit_repository import validate_repository_url
+    source = validate_repository_url(item.source_url)
+    report = {"source": source, "mode": "metadata-only", "manualApprovalRequired": True, "execution": "blocked", "suspiciousFiles": [], "manifests": [], "filesScanned": 0}
+    digest = hashlib.sha256(item.source_url.encode()).hexdigest()
+    with connect() as conn:
+        cur = conn.execute("INSERT INTO plugins(name,format,license,sha256,static_audit,dependencies,audit_report) VALUES(?,?,?,?,?,?,?)", (item.source_url, "repository", "unknown", digest, "pending", json.dumps([]), json.dumps(report)))
+        return {"id": cur.lastrowid, "name": item.source_url, "sha256": digest, "static_audit": "pending", "manually_approved": 0, "audit_report": report}
+
+
 class APIKeyCheck(BaseModel):
     provider: str
     api_key: str
@@ -221,8 +258,24 @@ try:
 except sqlite3.OperationalError:
     pass
 
+@app.get("/repositories/reports")
+def repository_reports():
+    with connect() as conn:
+        rows = conn.execute("SELECT id,name,format,license,sha256,static_audit,manually_approved,dependencies,audit_report FROM plugins WHERE format='repository' ORDER BY id DESC").fetchall()
+        return [dict(row) for row in rows]
+
+@app.get("/repositories/reports/{report_id}")
+def repository_report(report_id: int):
+    with connect() as conn:
+        row = conn.execute("SELECT id,name,format,license,sha256,static_audit,manually_approved,dependencies,audit_report FROM plugins WHERE id=? AND format='repository'", (report_id,)).fetchone()
+        return dict(row) if row else {"error": "repository_report_not_found"}
+
 @app.get("/plugins/{plugin_id}/report")
 def plugin_report(plugin_id: int):
     with connect() as conn:
         row = conn.execute("SELECT id,name,format,license,sha256,static_audit,manually_approved,dependencies,audit_report FROM plugins WHERE id=?", (plugin_id,)).fetchone()
         return dict(row) if row else {"error": "plugin_not_found"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8765, log_level="warning")
