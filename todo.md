@@ -195,3 +195,50 @@
 - [x] Vincular portal seguro por `clients.userId` e exigir cliente viewer ativo
 - [x] Aplicar policies admin/collaborator/viewer e ownership em projetos e entregas
 - [x] Adicionar testes automatizados de acesso permitido, acesso negado e ownership
+
+## Auditoria integral solicitada
+
+- [x] Auditar EXE portátil, instalador NSIS e artefatos por plataforma
+- [x] Auditar segurança Electron: preload, sandbox, isolamento, permissões e IPC
+- [x] Auditar backend local FastAPI, loopback, endpoints e empacotamento PyInstaller
+- [ ] Auditar dependências, scripts de build e vulnerabilidades conhecidas
+- [x] Auditar RBAC, ownership, migrations, persistência e notificações
+- [x] Auditar Plugin Vault, auditoria de repositórios e bloqueio de execução
+- [x] Auditar UX/PT-BR, estados vazios, fluxos reais e consistência visual
+- [x] Corrigir riscos críticos encontrados e repetir os testes
+- [x] Produzir relatório técnico final da auditoria com evidências e limitações
+
+## Auditoria real com evidências
+
+- [x] Executar auditoria reproduzível com comandos, testes, artefatos e resultados registrados; não tratar intenção como evidência
+
+## Auditoría de realidad operativa
+
+- [x] Mapear cada pantalla visible a una operación backend, tabla, procedimiento y estado verificable
+- [x] Probar el flujo productor: cliente → proyecto → entrega → comentario → aprobación → cobro → notificación
+- [ ] Probar catálogo: instrumental → licencia → referido → venta → contrato
+- [ ] Probar Audio Lab, asistente, memoria, Plugin Vault y auditoría de repositorios con datos reales
+- [x] Eliminar o etiquetar como demo cualquier métrica, contenido o acción que no tenga fuente persistente
+- [x] Documentar qué funciona offline, qué requiere servidor y qué todavía es sólo scaffolding
+- [x] Corrigir bloqueio SQLite no fluxo real de aprovação de plugin e repetir o teste end-to-end
+
+## Elevación operativa solicitada
+
+- [x] Separar visual y funcionalmente operador Duck/admin, colaborador, cliente portal y asistente contextual
+- [x] Evitar que el asistente trate al operador autenticado como cliente y mostrar contexto/rol activo
+- [x] Elevar CRM con historial de cliente, pipeline, tareas, entregas, cobros y permisos conectados
+- [x] Convertir acciones principales del dashboard en operaciones reales o estados claramente no disponibles
+- [x] Auditar pack de plugins: binarios legítimos, licencias, procedencia, compatibilidad, instalación y bloqueo seguro
+- [x] Revisar errores reproducibles del sistema y aplicar correcciones verificadas sin eliminar módulos existentes
+
+## Gaps confirmados por auditoría
+
+- [x] Mapear explícitamente cada pantalla visible a procedures, tablas y estados verificables
+- [x] Sustituir o etiquetar como demo todas las métricas hardcoded restantes del dashboard y asistente
+- [x] Aplicar guard de rol también a `/portal` y diferenciar funcionalmente admin, collaborator y viewer
+- [x] Implementar tareas persistentes del CRM con schema, tRPC, UI y permisos
+
+## Gaps finais confirmados
+
+- [x] Inspecionar e rotular respostas, métricas e estados locais do AssistantWidget como informativos, sem prometer ações executadas
+- [x] Demonstrar diferenças funcionais concretas entre admin e collaborator na UI, ações permitidas e testes

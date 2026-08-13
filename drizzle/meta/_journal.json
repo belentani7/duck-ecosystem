@@ -43,6 +43,13 @@
       "when": 1786576753116,
       "tag": "0005_loose_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786579362972,
+      "tag": "0006_crazy_red_shift",
+      "breakpoints": true
     }
   ]
 }

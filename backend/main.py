@@ -182,9 +182,11 @@ def audit_plugin(file: UploadFile = File(...)):
 @app.post("/plugins/{plugin_id}/approve")
 def approve_plugin(plugin_id: int):
     with connect() as conn:
-        conn.execute("UPDATE plugins SET static_audit='passed', manually_approved=1 WHERE id=?", (plugin_id,))
-        add_notification("plugin", f"Plugin {plugin_id} aprovado manualmente")
-        return {"id": plugin_id, "status": "approved"}
+        updated = conn.execute("UPDATE plugins SET static_audit='passed', manually_approved=1 WHERE id=?", (plugin_id,)).rowcount
+    if updated == 0:
+        return {"id": plugin_id, "status": "not_found"}
+    add_notification("plugin", f"Plugin {plugin_id} aprovado manualmente")
+    return {"id": plugin_id, "status": "approved"}
 
 
 @app.post("/audio/analyze")

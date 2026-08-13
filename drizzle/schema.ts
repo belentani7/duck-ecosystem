@@ -135,3 +135,17 @@ export const studioNotifications = mysqlTable("studioNotifications", {
   message: text("message").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
+
+export const studioTasks = mysqlTable("studioTasks", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  clientId: int("clientId"),
+  projectId: int("projectId"),
+  title: varchar("title", { length: 180 }).notNull(),
+  description: text("description"),
+  status: mysqlEnum("status", ["pending", "in_progress", "completed", "canceled"]).default("pending").notNull(),
+  priority: mysqlEnum("priority", ["low", "normal", "high"]).default("normal").notNull(),
+  dueAt: timestamp("dueAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
