@@ -95,7 +95,7 @@ function MetricCard({ icon: Icon, label, value, delta, accent }: { icon: typeof 
   );
 }
 
-export default function Home() {
+export default function Home({ offlineMode = false }: { offlineMode?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("Visão geral");
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window === "undefined" || window.innerWidth > 820);
@@ -126,7 +126,7 @@ export default function Home() {
 
   return (
     <div className="duck-app">
-      <div className="ambient ambient-one" /><div className="ambient ambient-two" /><div className="grid-noise" />
+      <div className="ambient ambient-one" /><div className="ambient ambient-two" /><div className="grid-noise" />{offlineMode && <div className="offline-mode-banner" role="status"><span><b>Modo local ativo</b><small>O núcleo online não respondeu. O dashboard continua disponível; sincronização será retomada quando a conexão voltar.</small></span><span className="offline-mode-dot" /></div>}
       <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="brand-lockup"><img className="brand-logo-image" src="/manus-storage/Untitled2_3621346a.png" alt="Duck" /><div className="duck-mark">D</div><div className="brand-copy"><b>DUCK</b><span>RITMO & FREQUÊNCIA</span></div><button className="icon-button mobile-only" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18} /></button></div>
         <div className="on-air"><span className="on-air-dot" /> NÚCLEO LOCAL <small>{typeof navigator !== "undefined" && navigator.onLine ? "ONLINE" : "OFFLINE"}</small></div>

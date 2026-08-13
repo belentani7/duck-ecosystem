@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const loadingSteps = ["Inicializando o estúdio", "Sincronizando projetos", "Armando ferramentas", "Tudo pronto para criar"];
 
-export function LoadingScreen({ phrase }: { phrase: string }) {
+export function LoadingScreen({ phrase, indeterminate = false }: { phrase: string; indeterminate?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [progress, setProgress] = useState(8);
   const [step, setStep] = useState(0);
@@ -42,5 +42,5 @@ export function LoadingScreen({ phrase }: { phrase: string }) {
     return () => window.clearInterval(timer);
   }, []);
 
-  return <div className="loading-screen"><img className="logo-watermark" src="/manus-storage/Untitled2_3621346a.png" alt="Duck Produção Musical" /><canvas ref={canvasRef} className="loading-canvas" /><div className="loading-orbit orbit-a" /><div className="loading-orbit orbit-b" /><div className="loading-grid" /><div className="loading-content"><div className="loading-logo"><span className="duck-mark large">D</span><span>DUCK<span className="green-dot">.</span>OS</span></div><span className="loading-label">RITMO & FREQUÊNCIA · LOCAL CORE</span><div className="loading-visual"><div className="loading-ring"><i /><b>{String(progress).padStart(2, "0")}</b></div><div className="loading-bars">{Array.from({ length: 24 }).map((_, index) => <i key={index} style={{ height: `${18 + ((index * 37) % 70)}%` }} />)}</div></div><p className="loading-step">{loadingSteps[step]}<span>...</span></p><p className="loading-phrase">“{phrase}”</p><div className="loading-progress"><i style={{ width: `${progress}%` }} /></div><span className="loading-hint">Seus dados permanecem sob seu controle</span></div></div>;
+  return <div className="loading-screen"><img className="logo-watermark" src="/manus-storage/Untitled2_3621346a.png" alt="Duck Produção Musical" /><canvas ref={canvasRef} className="loading-canvas" /><div className="loading-orbit orbit-a" /><div className="loading-orbit orbit-b" /><div className="loading-grid" /><div className="loading-content"><div className="loading-logo"><span className="duck-mark large">D</span><span>DUCK<span className="green-dot">.</span>OS</span></div><span className="loading-label">RITMO & FREQUÊNCIA · LOCAL CORE</span><div className="loading-visual"><div className="loading-ring"><i /><b>{indeterminate ? "···" : String(progress).padStart(2, "0")}</b></div><div className="loading-bars">{Array.from({ length: 24 }).map((_, index) => <i key={index} style={{ height: `${18 + ((index * 37) % 70)}%` }} />)}</div></div><p className="loading-step">{indeterminate ? "Conectando ao núcleo local/online" : loadingSteps[step]}<span>...</span></p><p className="loading-phrase">“{phrase}”</p><div className={`loading-progress${indeterminate ? " indeterminate" : ""}`}><i style={indeterminate ? undefined : { width: `${progress}%` }} /></div><span className="loading-hint">Seus dados permanecem sob seu controle</span></div></div>;
 }

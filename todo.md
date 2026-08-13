@@ -258,3 +258,23 @@
 ## Evidência de componente final
 
 - [x] Adicionar e executar teste do próprio AssistantWidget cobrindo admin/collaborator/viewer, localStorage e limites informativos
+
+## Discrepância de estado visível
+
+- [x] Investigar por que a interface ainda mostra o projeto como não concluído apesar do checkpoint final e alinhar o indicador com o estado real
+
+## Verificação final do estado visível
+
+- [x] Verificar visualmente qual elemento mostra o projeto como não acabado e registrar evidência
+- [x] Testar timeout do useAuthGate e saída do LoadingScreen em modo offline/servidor indisponível
+- [x] Ajustar LoadingScreen para estado conclusivo/erro honesto, sem progresso preso em 96%
+
+## Evidência final do estado de autenticação
+
+- [x] Adicionar teste automatizado de useAuthGate/roteamento para loading inicial, timeout de 3s e fallback sem travar
+- [x] Mostrar estado visual explícito de indisponibilidade após timeout, em vez de fallback silencioso
+- [x] Registrar evidência textual verificável da captura corrigida, incluindo estado do dashboard e áudio sem fonte
+
+## Teste real do App/auth gate
+
+- [x] Adicionar e executar teste DOM real de RoleAwareHome/RoleAwarePortal com loading inicial, timeout de 3s e fallback de modo local
