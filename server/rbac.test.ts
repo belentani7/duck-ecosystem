@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const dbMocks = vi.hoisted(() => ({
   getClientPortalData: vi.fn(async (userId: number) => userId === 22 ? { client: { id: 5, name: "Cliente Viewer", role: "viewer", status: "active" }, projects: [], deliveries: [] } : { client: undefined, projects: [], deliveries: [] }),
@@ -17,9 +17,27 @@ const dbMocks = vi.hoisted(() => ({
 vi.mock("./db", () => ({ ...dbMocks }));
 const { appRouter } = await import("./routers");
 
-const context = (id: number, role: "admin" | "collaborator" | "viewer" | "user") => ({ user: { id, role }, req: {}, res: {} } as any);
+const context = (id: number, role: "admin" | "collaborator" | "viewer" | "user", identity: { openId?: string; name?: string | null } = {}) => ({ user: { id, role, openId: identity.openId ?? `user-${id}`, name: identity.name ?? `Usuário ${id}` }, req: {}, res: {} } as any);
+const originalOwnerOpenId = process.env.OWNER_OPEN_ID;
+
+beforeEach(() => {
+  process.env.OWNER_OPEN_ID = "lucas-owner";
+});
+
+afterAll(() => {
+  if (originalOwnerOpenId === undefined) delete process.env.OWNER_OPEN_ID;
+  else process.env.OWNER_OPEN_ID = originalOwnerOpenId;
+});
 
 describe("RBAC do studio", () => {
+  it("libera o Belentani Experience somente para Lucas Silva e seu openId de owner", async () => {
+    const artifact = await appRouter.createCaller(context(1, "admin", { openId: "lucas-owner", name: "Lucas Silva" })).studio.belentaniExperience();
+    expect(artifact.title).toBe("Belentani Experience");
+    await expect(appRouter.createCaller(context(2, "admin", { openId: "other-owner", name: "Outra Pessoa" })).studio.belentaniExperience()).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(appRouter.createCaller(context(3, "collaborator", { openId: "lucas-owner", name: "Lucas Silva" })).studio.belentaniExperience()).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(appRouter.createCaller(context(22, "viewer", { openId: "lucas-owner", name: "Lucas Silva" })).studio.belentaniExperience()).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
   it("permite portal somente ao viewer vinculado a um cliente ativo", async () => {
     const portal = await appRouter.createCaller(context(22, "viewer")).studio.portal();
     expect(portal.client?.id).toBe(5);

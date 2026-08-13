@@ -46,6 +46,7 @@ import { ActivityHistoryPanel } from "@/components/ActivityHistoryPanel";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { TaskPanel } from "@/components/TaskPanel";
+import { BelentaniExperience } from "@/components/BelentaniExperience";
 
 const phrases = [
   "Acredite no seu som.",
@@ -157,6 +158,7 @@ export default function Home({ offlineMode = false }: { offlineMode?: boolean })
         {active === "Ferramentas" && <AudioLabPanel />}
         {active === "Vault de plugins" && <PluginReportPanel />}
         <footer className="app-footer"><span><span className="footer-led" /> DUCK.OS LOCAL CORE v0.1.0</span><span>Seus dados permanecem sob seu controle</span><span>Ajuda <span className="footer-separator">·</span> Privacidade</span></footer>
+        <BelentaniExperience />
       </main>
       {assistantOpen && <AssistantWidget onClose={() => setAssistantOpen(false)} />}
     </div>

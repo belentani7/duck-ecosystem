@@ -91,3 +91,11 @@ A captura de runtime da rota `/` após o restart do servidor confirmou que a apl
 A correção de runtime também incluiu o override compatível `path-to-regexp@0.1.13`; os logs confirmam que o servidor voltou a iniciar em `http://localhost:3000/` sem o erro anterior `pathRegexp is not a function`. `pnpm check`, 25 testes aprovados, build de produção e a captura visual foram executados após a correção.
 
 O fluxo de autenticação/roteamento foi testado diretamente em `shared/roleAwareViews.integration.test.tsx` com jsdom, autenticação mockada e timers falsos. Os dois casos passaram: a rota de Home exibe LoadingScreen inicialmente, após 3 segundos sai para Home com `Modo local ativo`; a rota `/portal` deixa de carregar após o mesmo timeout e mostra a mensagem de acesso restrito, sem abrir o portal para uma conta não viewer. Esta prova cobre os componentes `RoleAwareHome` e `RoleAwarePortal` usados pelo App, não apenas helpers puros.
+
+## Artefato Belentani Experience
+
+Foi implementado um easter egg visual personalizado, descrito na interface como **Belentani Experience**, dedicado ao produtor Duck Lucas Silva. O procedimento `studio.belentaniExperience` é protegido no backend por `role=admin`, nome autenticado `Lucas Silva` e correspondência exata com `OWNER_OPEN_ID`; colaboradores, viewers e demais administradores recebem `FORBIDDEN`. O frontend só consulta o procedimento para o candidato owner e só monta o selo após uma resposta autorizada, mantendo o artefato invisível para o portal de clientes e demais papéis.
+
+O artefato é deliberadamente **não funcional e não contém chaves secretas reais**. A referência às “cinco chaves” aparece apenas como fragmento narrativo `CHAVE 01/05 · SINAL DE CONFIANÇA`; nenhum segredo, token ou material de autenticação é distribuído no JavaScript, no DOM não autorizado ou no banco. Isso preserva o caráter pessoal de easter egg sem transformar a experiência em mecanismo de segurança.
+
+Evidências: `server/rbac.test.ts` cobre owner permitido, outro nome, collaborator e viewer bloqueados; `shared/belentaniExperience.integration.test.tsx` cobre montagem DOM exclusiva para Lucas Silva e ausência para collaborator, viewer e outro nome. Verificação final: 30 testes aprovados, 1 teste de integração real omitido por flag, `pnpm check` aprovado e build de produção aprovado.

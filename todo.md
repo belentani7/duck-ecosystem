@@ -278,3 +278,10 @@
 ## Teste real do App/auth gate
 
 - [x] Adicionar e executar teste DOM real de RoleAwareHome/RoleAwarePortal com loading inicial, timeout de 3s e fallback de modo local
+
+## Artefato Belentani Experience
+
+- [x] Criar autorização backend exclusiva para o owner Duck/Lucas Silva
+- [x] Implementar easter egg visual discreto e não exposto a viewers/clientes
+- [x] Testar visibilidade para owner, não-owner, collaborator e portal de cliente
+- [x] Documentar que o artefato é personalizado e não contém chaves secretas reais no frontend

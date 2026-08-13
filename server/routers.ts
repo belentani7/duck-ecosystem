@@ -15,6 +15,15 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") deny("Ação exclusiva do administrador Duck");
   return next();
 });
+const isBelentaniOwner = (user: { openId: string; name: string | null; role: string }) =>
+  user.role === "admin" &&
+  user.name === "Lucas Silva" &&
+  Boolean(process.env.OWNER_OPEN_ID) &&
+  user.openId === process.env.OWNER_OPEN_ID;
+const belentaniOwnerProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (!isBelentaniOwner(ctx.user)) deny("Artefato reservado ao produtor Duck");
+  return next();
+});
 const viewerProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const portal = await getClientPortalData(ctx.user.id);
   if (!portal.client || ctx.user.role !== "viewer") deny("Acesso restrito a cliente-visualizador vinculado");
@@ -58,6 +67,13 @@ export const appRouter = router({
     sales: staffProcedure.query(() => listSales()),
     updateSaleStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "paid", "refunded"]) })).mutation(async ({ ctx, input }) => { const result = await updateSaleStatus(input.id, input.status, ctx.user.id); await createStudioNotification({ userId: ctx.user.id, kind: "finance", message: `Pagamento #${input.id} alterado para ${input.status}` }); return result; }),
     notifications: protectedProcedure.query(({ ctx }) => listStudioNotifications(ctx.user.id)),
+    belentaniExperience: belentaniOwnerProcedure.query(() => ({
+      title: "Belentani Experience",
+      signature: "Desenvolvido discretamente por Belentani para Duck",
+      fragmentLabel: "CHAVE 01/05 · SINAL DE CONFIANÇA",
+      message: "Algumas criações não precisam fazer ruído para mudar o ambiente.",
+      isFunctional: false,
+    })),
     tasks: staffProcedure.query(({ ctx }) => listStudioTasks(ctx.user.id)),
     createTask: staffProcedure.input(z.object({ title: z.string().min(1), description: z.string().optional(), projectId: z.number().int().positive().optional(), clientId: z.number().int().positive().optional(), priority: z.enum(["low", "normal", "high"]).default("normal"), dueAt: z.date().optional() })).mutation(({ ctx, input }) => createStudioTask({ ...input, ownerId: ctx.user.id })),
     updateTaskStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "in_progress", "completed", "canceled"]) })).mutation(({ ctx, input }) => updateStudioTask(input.id, ctx.user.id, input.status)),
