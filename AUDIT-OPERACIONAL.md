@@ -65,3 +65,21 @@ A segunda rodada fechou os dois gaps que ainda impediam uma conclusão mais fort
 O CRM ganhou a tabela `studioTasks`, migration aditiva `0006_crazy_red_shift.sql`, procedures `studio.tasks`, `studio.createTask` e `studio.updateTaskStatus`, painel de tarefas e cobertura RBAC. A separação admin/collaborator é funcional: admin pode criar clientes, projetos, vendas e contratos; collaborator pode consultar o escopo, gerenciar tarefas e trabalhar entregas, mas recebe `FORBIDDEN` ao criar projeto. A UI também oculta configurações administrativas para collaborator.
 
 A execução final passou com `pnpm check`, `pnpm test` e `pnpm build`. A suíte normal terminou com 16 testes aprovados e 1 integração omitida por flag. A integração real foi executada corretamente com `RUN_REAL_DB_TESTS=1` e passou com 1 teste, incluindo eventos persistidos de comentário, aprovação e finanças lidos pelo `userId` real.
+
+## Evidência final dos itens residuais
+
+A auditoria local de dependências executou a listagem de scripts e pacotes de produção/desenvolvimento. O comando `pnpm audit --offline` não é suportado por esta versão do pnpm e o acesso ao registry externo já havia sido bloqueado; portanto, o relatório não inventa um resultado de CVE e mantém a necessidade de executar o scanner em um ambiente com registry acessível.
+
+O teste real `RUN_REAL_DB_TESTS=1 pnpm vitest run server/notifications.real.integration.test.ts` agora cobre também o catálogo: instrumental persistido, oferta de licença, código de referido com desconto de 10%, venda por R$ 9,00 em vez de R$ 10,00 e contrato draft persistido, com limpeza determinística. O comando final `node scripts/smoke-electron.cjs` retornou `{"ok":true,"backend":"healthy","electron":"running-under-xvfb"}`.
+
+Audio Lab, assistente, Plugin Vault e auditoria de repositórios têm cobertura funcional e smoke real, mas continuam com limites honestos: Audio Lab depende de arquivo/microfone e DSP disponíveis; o assistente é informativo e não executa mutações; o Plugin Vault audita estaticamente e bloqueia execução; e o pack de mastering é manifesto de fontes oficiais, não uma redistribuição de binários proprietários.
+
+## Fechamento das evidências residuais
+
+A auditoria de vulnerabilidades foi executada com acesso ao registry. O primeiro relatório encontrou vulnerabilidades transitivas em ferramentas como Vite/esbuild/tar/qs e outras dependências; `pnpm audit --fix` adicionou overrides e `pnpm install --no-frozen-lockfile` atualizou as dependências. A segunda execução de `pnpm audit --json` terminou com status 0 e nenhuma severidade reportada. O projeto foi reinstalado de forma limpa para eliminar cópias antigas e `pnpm check`/testes continuaram passando.
+
+A memória do assistente foi extraída para `shared/assistantMemory.ts` e coberta por `assistantMemory.test.ts`: notas de dois clientes são gravadas e lidas isoladamente; admin e collaborator podem editar notas locais de contexto; viewer fica no contexto `portal` e não pode editar a memória interna. `assistantContext.test.ts` também confirma que nenhum papel pode executar mutações pelo chat.
+
+A auditoria real de repositório foi repetida com `scripts/test_audit_repository.py`, `scripts/test_repository_endpoint.py` e `scripts/test_repository_http.py`. O primeiro teste contém e executa a asserção `report["execution"] == "blocked"`; os testes de endpoint confirmam URL → relatório → readback persistido, mantendo aprovação manual como etapa separada.
+
+A evidência final do componente foi executada em `shared/assistantWidget.integration.test.tsx` com jsdom e mocks controlados de autenticação/tRPC. Os três testes passaram: admin grava e relê uma nota local no contexto do cliente; collaborator opera no contexto do cliente e recebe a resposta informativa sem promessas de mutação; viewer aparece como portal somente leitura sem controles de memória/configuração.

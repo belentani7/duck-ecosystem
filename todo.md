@@ -201,7 +201,7 @@
 - [x] Auditar EXE portátil, instalador NSIS e artefatos por plataforma
 - [x] Auditar segurança Electron: preload, sandbox, isolamento, permissões e IPC
 - [x] Auditar backend local FastAPI, loopback, endpoints e empacotamento PyInstaller
-- [ ] Auditar dependências, scripts de build e vulnerabilidades conhecidas
+- [x] Auditar dependências, scripts de build e vulnerabilidades conhecidas
 - [x] Auditar RBAC, ownership, migrations, persistência e notificações
 - [x] Auditar Plugin Vault, auditoria de repositórios e bloqueio de execução
 - [x] Auditar UX/PT-BR, estados vazios, fluxos reais e consistência visual
@@ -216,8 +216,8 @@
 
 - [x] Mapear cada pantalla visible a una operación backend, tabla, procedimiento y estado verificable
 - [x] Probar el flujo productor: cliente → proyecto → entrega → comentario → aprobación → cobro → notificación
-- [ ] Probar catálogo: instrumental → licencia → referido → venta → contrato
-- [ ] Probar Audio Lab, asistente, memoria, Plugin Vault y auditoría de repositorios con datos reales
+- [x] Probar catálogo: instrumental → licencia → referido → venta → contrato
+- [x] Probar Audio Lab, asistente, memoria, Plugin Vault y auditoría de repositorios con datos reales
 - [x] Eliminar o etiquetar como demo cualquier métrica, contenido o acción que no tenga fuente persistente
 - [x] Documentar qué funciona offline, qué requiere servidor y qué todavía es sólo scaffolding
 - [x] Corrigir bloqueio SQLite no fluxo real de aprovação de plugin e repetir o teste end-to-end
@@ -242,3 +242,19 @@
 
 - [x] Inspecionar e rotular respostas, métricas e estados locais do AssistantWidget como informativos, sem prometer ações executadas
 - [x] Demonstrar diferenças funcionais concretas entre admin e collaborator na UI, ações permitidas e testes
+
+## Evidências finais solicitadas pela auditoria
+
+- [x] Executar auditoria de vulnerabilidades conhecida em ambiente com registry acessível e registrar resultado real
+- [x] Executar teste real do Audio Lab com fixture/endpoint e registrar conclusão ou erro honesto
+- [x] Executar fluxo real do assistente e memória por papel/contexto, incluindo limites informativos
+- [x] Executar auditoria real de repositório: URL → relatório persistido → leitura/aprovação bloqueada
+
+## Evidência final residual
+
+- [x] Executar teste reproduzível do AssistantWidget por papel cobrindo gravação/leitura local da memória e limites informativos
+- [x] Executar teste real de auditoria de repositório que comprove bloqueio antes da aprovação manual
+
+## Evidência de componente final
+
+- [x] Adicionar e executar teste do próprio AssistantWidget cobrindo admin/collaborator/viewer, localStorage e limites informativos
