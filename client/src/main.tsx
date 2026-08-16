@@ -7,6 +7,9 @@ import superjson from "superjson";
 import App from "./App";
 import { startLogin } from "./const";
 import "./index.css";
+import { createTraceId } from "@shared/pvcU";
+
+const CLIENT_VERSION = "duckos-rnf/1.0.0";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,11 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       headers() {
+        const protocolHeaders = {
+          "X-Client-Version": CLIENT_VERSION,
+          "Accept-Version": "1",
+          "X-Trace-Id": createTraceId(),
+        };
         // Preview auto-login fallback: when the browser blocks iframe cookies
         // (Safari ITP / private browsing / WebView), the runtime mirrors the
         // session into sessionStorage so we can forward it as a Bearer token.
@@ -54,13 +62,13 @@ const trpcClient = trpc.createClient({
             const pair = raw.split(";").find(s => s.trim().startsWith(prefix));
             const token = pair?.trim().slice(prefix.length);
             if (token) {
-              return { Authorization: `Bearer ${token}` };
+              return { ...protocolHeaders, Authorization: `Bearer ${token}` };
             }
           }
         } catch {
           // sessionStorage unavailable
         }
-        return {};
+        return protocolHeaders;
       },
       fetch(input, init) {
         return globalThis.fetch(input, {

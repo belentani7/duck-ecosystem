@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { groundedValidationProfile, taskInputSchema, validateTaskInput } from "@shared/pvcU";
 import { addProjectComment, approveDelivery, canAccessDelivery, canAccessProject, createClient, createDelivery, createProject, createContractDraft, createSale, createStudioNotification, createStudioTask, getClientPortalData, listActiveReferrals, listAllDeliveries, listClientHistory, listClients, listDeliveries, listInstrumentals, listLicenseOffers, listProjectActivities, listProjects, listSales, listStudioNotifications, listStudioTasks, updateSaleStatus, updateStudioTask } from "./db";
 
 const deny = (message: string) => { throw new TRPCError({ code: "FORBIDDEN", message }); };
@@ -67,6 +68,7 @@ export const appRouter = router({
     sales: staffProcedure.query(() => listSales()),
     updateSaleStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "paid", "refunded"]) })).mutation(async ({ ctx, input }) => { const result = await updateSaleStatus(input.id, input.status, ctx.user.id); await createStudioNotification({ userId: ctx.user.id, kind: "finance", message: `Pagamento #${input.id} alterado para ${input.status}` }); return result; }),
     notifications: protectedProcedure.query(({ ctx }) => listStudioNotifications(ctx.user.id)),
+    validationProfile: protectedProcedure.query(() => groundedValidationProfile),
     belentaniExperience: belentaniOwnerProcedure.query(() => ({
       title: "Belentani Experience",
       signature: "Desenvolvido discretamente por Belentani para Duck",
@@ -75,7 +77,13 @@ export const appRouter = router({
       isFunctional: false,
     })),
     tasks: staffProcedure.query(({ ctx }) => listStudioTasks(ctx.user.id)),
-    createTask: staffProcedure.input(z.object({ title: z.string().min(1), description: z.string().optional(), projectId: z.number().int().positive().optional(), clientId: z.number().int().positive().optional(), priority: z.enum(["low", "normal", "high"]).default("normal"), dueAt: z.date().optional() })).mutation(({ ctx, input }) => createStudioTask({ ...input, ownerId: ctx.user.id })),
+    createTask: staffProcedure.input(taskInputSchema).mutation(({ ctx, input }) => {
+      const validation = validateTaskInput(input);
+      if (validation.status !== "PASSED" || !validation.data) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: `${validation.issues[0]?.code ?? "PVC-100"}: ${validation.issues[0]?.message ?? "Entrada inválida"}` });
+      }
+      return createStudioTask({ ...validation.data, ownerId: ctx.user.id });
+    }),
     updateTaskStatus: staffProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "in_progress", "completed", "canceled"]) })).mutation(({ ctx, input }) => updateStudioTask(input.id, ctx.user.id, input.status)),
   }),
 });

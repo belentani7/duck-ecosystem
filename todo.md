@@ -285,3 +285,40 @@
 - [x] Implementar easter egg visual discreto e não exposto a viewers/clientes
 - [x] Testar visibilidade para owner, não-owner, collaborator e portal de cliente
 - [x] Documentar que o artefato é personalizado e não contém chaves secretas reais no frontend
+
+## Manual PDF DuckOS/RnF
+
+- [x] Consolidar conteúdo técnico verificável em espanhol e estrutura de 15+ páginas
+- [x] Gerar PDF com estética Duck verde escuro/neon e fundo verde
+- [x] Validar paginação, legibilidade e conteúdo operacional
+- [x] Entregar o PDF final com limites documentados
+
+## Artefato HTML Belentani/Duck
+
+- [x] Preparar e copiar as imagens fornecidas para o pacote local
+- [x] Criar HTML/CSS/JavaScript animado com diamante Belentani vermelho e Duck verde
+- [x] Implementar perguntas obvias e revelação final da senha do ZIP
+- [x] Testar interação local e referências de assets
+- [x] Gerar ZIP protegido e criar e-mail completo de entrega
+
+## Correção de entrega do artefato
+
+- [x] Colocar index.html como primeiro arquivo na raiz do ZIP
+- [x] Remover a senha explícita do email e instruir a abrir primeiro o HTML
+- [x] Recriar e testar o ZIP corrigido
+
+## Expansão NOIACORE/Belentani
+
+- [x] Copiar os novos assets NOIACORE e Belentani enviados
+- [x] Criar imagens adicionais de artefatos em vermelho Belentani e verde Duck
+- [x] Escrever lore em português para orientar a descoberta da senha no HTML
+- [x] Atualizar o PDF com todas as novas imagens e o lore
+- [x] Atualizar HTML/ZIP e validar que o email não contém a senha
+
+## Integração de pasted_content_6.txt no código base
+
+- [x] Ler e classificar o conteúdo recebido
+- [x] Mapear requisitos para módulos, procedures e componentes existentes
+- [x] Implementar as alterações compatíveis com RBAC/ownership
+- [x] Criar ou atualizar testes e documentação
+- [x] Executar typecheck, testes e build antes da entrega
