@@ -322,3 +322,10 @@
 - [x] Implementar as alterações compatíveis com RBAC/ownership
 - [x] Criar ou atualizar testes e documentação
 - [x] Executar typecheck, testes e build antes da entrega
+
+## Publicação GitHub
+
+- [ ] Verificar arquivos ignorados e ausência de segredos antes do push
+- [ ] Criar repositório privado `duck-ecosystem`
+- [ ] Configurar remoto, fazer commit e publicar a branch principal
+- [ ] Verificar URL, visibilidade e estado do repositório remoto
