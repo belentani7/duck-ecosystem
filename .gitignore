@@ -117,3 +117,12 @@ client/public/__manus__/version.json
 desktop/release/
 backend/build/
 backend/dist/
+
+# BELENTANI legacy — seguridad
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+node_modules/
+.next/
+.vercel/
